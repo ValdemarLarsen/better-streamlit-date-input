@@ -6,7 +6,7 @@ long_description = (this_directory / "README.md").read_text(encoding='utf-8')
 
 setup(
     name="streamlit-date-events",
-    version="0.1.0",
+    version="0.1.2",
     author="Valdemar",
     author_email="valdemarlarsen0608@gmail.com",
     description="A Streamlit date input component with event markers",
