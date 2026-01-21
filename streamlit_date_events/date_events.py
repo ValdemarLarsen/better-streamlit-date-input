@@ -3,7 +3,7 @@ import streamlit.components.v1 as components
 from datetime import date, datetime
 from typing import List, Optional, Union, Dict
 
-_RELEASE = False  # Set to True for production
+_RELEASE = True  # Set to True for production
 
 if not _RELEASE:
     _component_func = components.declare_component(
