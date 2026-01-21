@@ -4,15 +4,15 @@ An enhanced date input component for Streamlit with event markers and multiple d
 
 ## Features
 
-- 📅 Calendar-based date picker with Streamlit styling
-- 🔴 Event markers (small dots) under specific dates
-- 🎨 Multiple event types with custom colors and labels
-- 📊 Legend showing event types
-- 💡 Tooltips on hover showing event details
-- 🎯 Two display modes: inline (always visible) or dropdown (click to open)
-- ⚙️ Min/max date restrictions
-- 🎨 Customizable event colors
-- 🔄 Backward compatible with simple event lists
+- Calendar-based date picker with Streamlit styling
+- Event markers (small dots) under specific dates
+- Multiple event types with custom colors and labels
+- Legend showing event types
+- Tooltips on hover showing event details
+- Two display modes: inline (always visible) or dropdown (click to open)
+- Min/max date restrictions
+- Customizable event colors
+- Backward compatible with simple event lists
 
 
 **[Try it here](https://better-date-input.streamlit.app/)**
