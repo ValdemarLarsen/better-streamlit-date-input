@@ -85,7 +85,7 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
       const legendHeight = showLegend && Object.keys(eventTypes).length > 0 ? 80 : 0
       Streamlit.setFrameHeight(380 + legendHeight)
     } else {
-      Streamlit.setFrameHeight(isOpen ? 500 : 60)
+      Streamlit.setFrameHeight(isOpen ? 500 : 80)
     }
   }, [isOpen, mode, showLegend, eventTypes])
 
@@ -467,7 +467,8 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
         position: "relative",
         width: "100%",
         maxWidth: "300px",
-        zIndex: 9999
+        zIndex: 9999,
+        isolation: "isolate"
       }}>
         <label style={{
           display: "block",
@@ -483,8 +484,6 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
         <button
           onClick={() => setIsOpen(!isOpen)}
           style={{
-          position: "relative", // <-- vigtigt
-          zIndex: 9999,         // <-- høj værdi
           width: "100%",
           padding: "10px 14px",
           backgroundColor: colors.bg,

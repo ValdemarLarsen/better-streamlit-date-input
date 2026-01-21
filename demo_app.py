@@ -99,7 +99,7 @@ with tab1:
         )
         
         if selected1:
-            st.info(f"**Selected:** {selected1.strftime('%B %d, %Y')}")
+            #st.info(f"**Selected:** {selected1.strftime('%B %d, %Y')}")
             if selected1 in simple_events:
                 st.success("This date has an event!")
     
