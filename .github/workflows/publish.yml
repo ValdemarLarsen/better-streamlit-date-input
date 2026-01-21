@@ -12,6 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Build react frontend
+        run: |
+          cd streamlit_date_events/frontend
+          npm install
+          npm run build
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
