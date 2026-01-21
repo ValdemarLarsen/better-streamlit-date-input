@@ -21,8 +21,12 @@ interface DayInfo {
 }
 
 const DateEventPicker: React.FC<ComponentProps> = (props) => {
-  const { args } = props
-  
+  const args = props.args ?? {}
+
+  useEffect(() => {
+    Streamlit.setComponentReady()
+  }, [])
+
   const [selectedDate, setSelectedDate] = useState<string>(args.defaultValue || "")
   const [currentMonth, setCurrentMonth] = useState<Date>(
     args.defaultValue ? new Date(args.defaultValue) : new Date()
@@ -32,10 +36,6 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const mode = args.mode || "inline"
-
-  useEffect(() => {
-    Streamlit.setComponentReady()
-  }, [])
 
   useEffect(() => {
     if (mode === "inline") {
