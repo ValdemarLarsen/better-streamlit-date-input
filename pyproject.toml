@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "streamlit-date-events"
+version = "0.1.1"
+description = "An advanced Streamlit date input component with event markers and multiple display modes"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT"}
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+keywords = ["streamlit", "date-picker", "calendar", "events", "component"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: User Interfaces",
+]
+dependencies = [
+    "streamlit>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/valdemarlarsen/better-streamlit-date-input"
+Documentation = "https://github.com/valdemarlarsen/better-streamlit-date-input#readme"
+Repository = "https://github.com/valdemarlarsen/better-streamlit-date-input"
+"Bug Tracker" = "https://github.com/valdemarlarsen/better-streamlit-date-input/issues"
