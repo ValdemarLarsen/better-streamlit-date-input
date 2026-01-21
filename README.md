@@ -14,6 +14,9 @@ An enhanced date input component for Streamlit with event markers and multiple d
 - 🎨 Customizable event colors
 - 🔄 Backward compatible with simple event lists
 
+
+**[Try it here](https://better-date-input.streamlit.app/)**
+
 ## Installation
 
 ```bash
