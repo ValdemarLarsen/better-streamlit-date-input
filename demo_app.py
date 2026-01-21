@@ -15,7 +15,7 @@ st.markdown("""
 An advanced date picker component for Streamlit with event markers, multiple event types, and flexible display modes.
 
 [![PyPI](https://img.shields.io/pypi/v/streamlit-date-events)](https://pypi.org/project/streamlit-date-events/)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/yourusername/streamlit-date-events)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue)](https://github.com/ValdemarLarsen/better-streamlit-date-input)
 """)
 
 st.divider()
