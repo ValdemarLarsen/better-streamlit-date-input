@@ -5,11 +5,27 @@ import {
 } from "streamlit-component-lib"
 import { ComponentProps } from "streamlit-component-lib/dist/StreamlitReact"
 
+//Ikoner
+import { ArrowBigLeft, ArrowBigRight } from "lucide-react"
+
+
 interface EventType {
   dates: string[]
   color: string
   label: string
 }
+
+
+//Hent af theme fra streamlit
+interface StreamlitTheme {
+  base: "light" | "dark"
+  primaryColor: string
+  backgroundColor: string
+  secondaryBackgroundColor: string
+  textColor: string
+  font: string
+}
+
 
 interface EventTypes {
   [key: string]: EventType
@@ -36,6 +52,33 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   const mode = args.mode || "inline"
+  const theme = props.theme as StreamlitTheme | undefined
+
+  const colors = {
+    primary: theme?.primaryColor ?? "#ff4b4b",
+    bg: theme?.backgroundColor ?? "#ffffff",
+    bgSecondary: theme?.secondaryBackgroundColor ?? "#f6f8fa",
+    text: theme?.textColor ?? "#31333f",
+    muted: theme?.base === "dark" ? "#9aa0a6" : "#838c97",
+    border: theme?.base === "dark" ? "#3a3a3a" : "#e2e8f0",
+  }
+
+  const monthButtonStyle = {
+    width: "32px",
+    height: "32px",
+    borderRadius: "999px",
+    backgroundColor: colors.primary,
+    color: "white",
+    border: "none",
+    fontSize: "18px",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "transform 0.15s ease, opacity 0.15s ease",
+  }
+
+
 
   useEffect(() => {
     if (mode === "inline") {
@@ -61,14 +104,14 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
 
   const handleDateClick = (date: string) => {
     const clickedDate = new Date(date)
-    
+
     if (args.minDate && clickedDate < new Date(args.minDate)) return
     if (args.maxDate && clickedDate > new Date(args.maxDate)) return
-    
+
     setSelectedDate(date)
     setCurrentMonth(new Date(date))
     Streamlit.setComponentValue(date)
-    
+
     if (mode === "dropdown") {
       setIsOpen(false)
     }
@@ -77,7 +120,7 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
   const getEventsForDate = (dateStr: string): { color: string; label: string }[] => {
     const eventTypes: EventTypes = args.eventTypes || {}
     const events: { color: string; label: string }[] = []
-    
+
     Object.keys(eventTypes).forEach((key) => {
       const eventType = eventTypes[key]
       if (eventType.dates && eventType.dates.includes(dateStr)) {
@@ -87,7 +130,7 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
         })
       }
     })
-    
+
     return events
   }
 
@@ -157,14 +200,14 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
         <div style={{
           marginBottom: "0.75rem",
           padding: "0.75rem",
-          backgroundColor: "rgb(246, 248, 250)",
+          backgroundColor: colors.bg,
           borderRadius: "0.375rem",
           border: "1px solid rgb(226, 232, 240)"
         }}>
           <div style={{
             fontSize: "12px",
             fontWeight: 600,
-            color: "rgb(49, 51, 63)",
+            color: colors.text,
             marginBottom: "0.5rem"
           }}>
             Event Types
@@ -194,7 +237,7 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
                   }} />
                   <span style={{
                     fontSize: "12px",
-                    color: "rgb(49, 51, 63)"
+                    color: colors.text
                   }}>
                     {eventType.label}
                   </span>
@@ -204,12 +247,12 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
           </div>
         </div>
       )}
-      
+
       <div style={{
         border: "1px solid rgb(226, 232, 240)",
         borderRadius: "0.5rem",
         padding: "1rem",
-        backgroundColor: "white",
+        backgroundColor: colors.bg,
         width: "280px",
         position: "relative"
       }}>
@@ -222,36 +265,26 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
         }}>
           <button
             onClick={() => changeMonth(-1)}
-            style={{
-              background: "none",
-              border: "none",
-              fontSize: "18px",
-              cursor: "pointer",
-              padding: "0.25rem 0.5rem",
-              color: "rgb(49, 51, 63)"
-            }}
+            style={monthButtonStyle}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
           >
-            ‹
+            <ArrowBigLeft />
           </button>
           <div style={{
             fontSize: "14px",
             fontWeight: 600,
-            color: "rgb(49, 51, 63)"
+            color: colors.text
           }}>
             {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
           </div>
           <button
             onClick={() => changeMonth(1)}
-            style={{
-              background: "none",
-              border: "none",
-              fontSize: "18px",
-              cursor: "pointer",
-              padding: "0.25rem 0.5rem",
-              color: "rgb(49, 51, 63)"
-            }}
+            style={monthButtonStyle}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
           >
-            ›
+            <ArrowBigRight />
           </button>
         </div>
 
@@ -288,7 +321,7 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
             const isSelected = day.date === selectedDate
             const isDisabled = isDateDisabled(day.date)
             const isHovered = day.date === hoveredDate
-            
+
             return (
               <div key={index} style={{ position: "relative" }}>
                 <button
@@ -304,15 +337,15 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
                     fontSize: "13px",
                     cursor: day.date && !isDisabled ? "pointer" : "default",
                     backgroundColor: isSelected
-                      ? "rgb(255, 75, 75)"
+                      ? colors.primary
                       : isHovered && !isDisabled
-                      ? "rgb(246, 248, 250)"
-                      : "transparent",
+                        ? colors.bgSecondary
+                        : "transparent",
                     color: isSelected
                       ? "white"
                       : isDisabled
-                      ? "rgb(226, 232, 240)"
-                      : "rgb(49, 51, 63)",
+                        ? colors.text
+                        : colors.text,
                     fontWeight: isSelected ? 600 : 400,
                     transition: "all 0.15s ease",
                     position: "relative",
@@ -320,7 +353,7 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
                   }}
                 >
                   {day.date ? new Date(day.date).getDate() : ""}
-                  
+
                   {/* Event Markers */}
                   {day.events.length > 0 && (
                     <div style={{
@@ -347,7 +380,7 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
                     </div>
                   )}
                 </button>
-                
+
                 {/* Tooltip on hover */}
                 {isHovered && day.events.length > 0 && (
                   <div style={{
@@ -355,8 +388,8 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
                     bottom: "calc(100% + 4px)",
                     left: "50%",
                     transform: "translateX(-50%)",
-                    backgroundColor: "rgb(49, 51, 63)",
-                    color: "white",
+                    backgroundColor: colors.bg,
+                    color: colors.text,
                     padding: "0.375rem 0.5rem",
                     borderRadius: "0.25rem",
                     fontSize: "11px",
@@ -406,22 +439,22 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
           fontSize: "14px",
           fontWeight: 400,
           marginBottom: "0.25rem",
-          color: "rgb(49, 51, 63)"
+          color: colors.text
         }}>
           {label}
         </label>
-        
+
         {/* Dropdown Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
           style={{
             width: "280px",
             padding: "0.5rem 0.75rem",
-            backgroundColor: "white",
+            backgroundColor: colors.bg,
             border: "1px solid rgb(226, 232, 240)",
             borderRadius: "0.5rem",
             fontSize: "14px",
-            color: "rgb(49, 51, 63)",
+            color: colors.text,
             cursor: "pointer",
             textAlign: "left",
             display: "flex",
@@ -472,7 +505,7 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
             top: "calc(100% + 0.5rem)",
             left: 0,
             zIndex: 1000,
-            backgroundColor: "white",
+            backgroundColor: colors.bg,
             border: "1px solid rgb(226, 232, 240)",
             borderRadius: "0.5rem",
             padding: "1rem",
@@ -493,7 +526,7 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
         fontSize: "14px",
         fontWeight: 400,
         marginBottom: "0.5rem",
-        color: "rgb(49, 51, 63)"
+        color: colors.text
       }}>
         {label}
       </label>

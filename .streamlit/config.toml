@@ -1,0 +1,16 @@
+[theme]
+base = "dark"
+
+# Brøndby gul (primær – lidt dæmpet i dark)
+primaryColor = "#FFD200"
+
+# Meget mørk blå baggrund
+backgroundColor = "#0B1C2D"
+
+# Sekundær mørk blå/grå
+secondaryBackgroundColor = "#162A3D"
+
+# Lys tekst
+textColor = "#F5F7FA"
+
+font = "sans serif"
