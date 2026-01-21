@@ -6,7 +6,7 @@ import {
 import { ComponentProps } from "streamlit-component-lib/dist/StreamlitReact"
 
 //Ikoner
-import { ArrowBigLeft, ArrowBigRight } from "lucide-react"
+import { ArrowBigLeft, ArrowBigRight, ChevronDown } from "lucide-react"
 
 
 interface EventType {
@@ -85,7 +85,7 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
       const legendHeight = showLegend && Object.keys(eventTypes).length > 0 ? 80 : 0
       Streamlit.setFrameHeight(380 + legendHeight)
     } else {
-      Streamlit.setFrameHeight(isOpen ? 460 : 50)
+      Streamlit.setFrameHeight(isOpen ? 500 : 60)
     }
   }, [isOpen, mode, showLegend, eventTypes])
 
@@ -193,14 +193,20 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
   const selectedEvents = selectedDate ? getEventsForDate(selectedDate) : []
 
   const CalendarContent = () => (
-    <div style={{ width: "100%" }}>
+    <div style={{
+      border: `1px solid ${colors.border}`,
+      borderRadius: "8px",
+      padding: "12px",
+      backgroundColor: colors.bg,
+      width: "100%",
+    }}>
       {/* Legend */}
       {showLegend && Object.keys(eventTypes).length > 0 && (
         <div style={{
           marginBottom: "12px",
-          padding: "10px 12px",
-          backgroundColor: colors.bg,
-          borderRadius: "8px",
+          padding: "10px",
+          backgroundColor: colors.bgSecondary,
+          borderRadius: "6px",
           border: `1px solid ${colors.border}`
         }}>
           <div style={{
@@ -253,210 +259,202 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
         </div>
       )}
 
+      {/* Month Navigation */}
       <div style={{
-        border: `1px solid ${colors.border}`,
-        borderRadius: "8px",
-        padding: "12px",
-        backgroundColor: colors.bg,
-        width: "100%",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: "12px"
       }}>
-        {/* Month Navigation */}
+        <button
+          onClick={() => changeMonth(-1)}
+          style={monthButtonStyle}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = colors.bgSecondary
+            e.currentTarget.style.borderColor = colors.muted
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "transparent"
+            e.currentTarget.style.borderColor = colors.border
+          }}
+        >
+          <ArrowBigLeft size={18} />
+        </button>
         <div style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "12px"
+          fontSize: "14px",
+          fontWeight: 600,
+          color: colors.text,
+          letterSpacing: "0.3px"
         }}>
-          <button
-            onClick={() => changeMonth(-1)}
-            style={monthButtonStyle}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = colors.bgSecondary
-              e.currentTarget.style.borderColor = colors.muted
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent"
-              e.currentTarget.style.borderColor = colors.border
+          {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+        </div>
+        <button
+          onClick={() => changeMonth(1)}
+          style={monthButtonStyle}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = colors.bgSecondary
+            e.currentTarget.style.borderColor = colors.muted
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "transparent"
+            e.currentTarget.style.borderColor = colors.border
+          }}
+        >
+          <ArrowBigRight size={18} />
+        </button>
+      </div>
+
+      {/* Day Headers */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(7, 1fr)",
+        gap: "4px",
+        marginBottom: "8px"
+      }}>
+        {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
+          <div
+            key={day}
+            style={{
+              textAlign: "center",
+              fontSize: "11px",
+              fontWeight: 600,
+              color: colors.muted,
+              padding: "8px 0",
+              textTransform: "uppercase",
+              letterSpacing: "0.5px"
             }}
           >
-            <ArrowBigLeft size={18} />
-          </button>
-          <div style={{
-            fontSize: "14px",
-            fontWeight: 600,
-            color: colors.text,
-            letterSpacing: "0.3px"
-          }}>
-            {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+            {day}
           </div>
-          <button
-            onClick={() => changeMonth(1)}
-            style={monthButtonStyle}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = colors.bgSecondary
-              e.currentTarget.style.borderColor = colors.muted
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent"
-              e.currentTarget.style.borderColor = colors.border
-            }}
-          >
-            <ArrowBigRight size={18} />
-          </button>
-        </div>
+        ))}
+      </div>
 
-        {/* Day Headers */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(7, 1fr)",
-          gap: "4px",
-          marginBottom: "8px"
-        }}>
-          {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
-            <div
-              key={day}
-              style={{
-                textAlign: "center",
-                fontSize: "11px",
-                fontWeight: 600,
-                color: colors.muted,
-                padding: "8px 0",
-                textTransform: "uppercase",
-                letterSpacing: "0.5px"
-              }}
-            >
-              {day}
-            </div>
-          ))}
-        </div>
+      {/* Calendar Grid */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(7, 1fr)",
+        gap: "4px"
+      }}>
+        {days.map((day, index) => {
+          const isSelected = day.date === selectedDate
+          const isDisabled = isDateDisabled(day.date)
+          const isHovered = day.date === hoveredDate
+          const isToday = day.date === new Date().toISOString().split('T')[0]
 
-        {/* Calendar Grid */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(7, 1fr)",
-          gap: "4px"
-        }}>
-          {days.map((day, index) => {
-            const isSelected = day.date === selectedDate
-            const isDisabled = isDateDisabled(day.date)
-            const isHovered = day.date === hoveredDate
-            const isToday = day.date === new Date().toISOString().split('T')[0]
+          return (
+            <div key={index} style={{ position: "relative" }}>
+              <button
+                onClick={() => day.date && handleDateClick(day.date)}
+                onMouseEnter={() => day.date && setHoveredDate(day.date)}
+                onMouseLeave={() => setHoveredDate(null)}
+                disabled={!day.date || isDisabled}
+                style={{
+                  width: "100%",
+                  aspectRatio: "1",
+                  border: isToday && !isSelected ? `2px solid ${colors.primary}` : "none",
+                  borderRadius: "6px",
+                  fontSize: "13px",
+                  cursor: day.date && !isDisabled ? "pointer" : "default",
+                  backgroundColor: isSelected
+                    ? colors.primary
+                    : isHovered && !isDisabled
+                      ? colors.bgSecondary
+                      : "transparent",
+                  color: isSelected
+                    ? "white"
+                    : isDisabled
+                      ? colors.muted
+                      : colors.text,
+                  fontWeight: isSelected || isToday ? 600 : 400,
+                  transition: "all 0.2s ease",
+                  position: "relative",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  paddingBottom: day.events.length > 0 ? "6px" : "0",
+                  opacity: isDisabled ? 0.4 : 1
+                }}
+              >
+                {day.date ? new Date(day.date).getDate() : ""}
 
-            return (
-              <div key={index} style={{ position: "relative" }}>
-                <button
-                  onClick={() => day.date && handleDateClick(day.date)}
-                  onMouseEnter={() => day.date && setHoveredDate(day.date)}
-                  onMouseLeave={() => setHoveredDate(null)}
-                  disabled={!day.date || isDisabled}
-                  style={{
-                    width: "100%",
-                    aspectRatio: "1",
-                    border: isToday && !isSelected ? `2px solid ${colors.primary}` : "none",
-                    borderRadius: "6px",
-                    fontSize: "13px",
-                    cursor: day.date && !isDisabled ? "pointer" : "default",
-                    backgroundColor: isSelected
-                      ? colors.primary
-                      : isHovered && !isDisabled
-                        ? colors.bgSecondary
-                        : "transparent",
-                    color: isSelected
-                      ? "white"
-                      : isDisabled
-                        ? colors.muted
-                        : colors.text,
-                    fontWeight: isSelected || isToday ? 600 : 400,
-                    transition: "all 0.2s ease",
-                    position: "relative",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    paddingBottom: day.events.length > 0 ? "6px" : "0",
-                    opacity: isDisabled ? 0.4 : 1
-                  }}
-                >
-                  {day.date ? new Date(day.date).getDate() : ""}
-
-                  {/* Event Markers */}
-                  {day.events.length > 0 && (
-                    <div style={{
-                      position: "absolute",
-                      bottom: "4px",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      display: "flex",
-                      gap: "3px",
-                      justifyContent: "center"
-                    }}>
-                      {day.events.slice(0, 3).map((event, i) => (
-                        <span
-                          key={i}
-                          style={{
-                            width: "5px",
-                            height: "5px",
-                            borderRadius: "50%",
-                            backgroundColor: isSelected ? "rgba(255,255,255,0.9)" : event.color,
-                            display: "inline-block"
-                          }}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </button>
-
-                {/* Tooltip on hover */}
-                {isHovered && day.events.length > 0 && (
+                {/* Event Markers */}
+                {day.events.length > 0 && (
                   <div style={{
                     position: "absolute",
-                    bottom: "calc(100% + 8px)",
+                    bottom: "4px",
                     left: "50%",
                     transform: "translateX(-50%)",
-                    backgroundColor: theme?.base === "dark" ? "#1e1e1e" : "#2d2d2d",
-                    color: "white",
-                    padding: "8px 10px",
-                    borderRadius: "6px",
-                    fontSize: "12px",
-                    whiteSpace: "nowrap",
-                    zIndex: 1000,
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                    pointerEvents: "none"
+                    display: "flex",
+                    gap: "3px",
+                    justifyContent: "center"
                   }}>
-                    {day.events.map((event, i) => (
-                      <div key={i} style={{ 
-                        display: "flex", 
-                        alignItems: "center", 
-                        gap: "6px",
-                        marginBottom: i < day.events.length - 1 ? "4px" : "0"
-                      }}>
-                        <span style={{
-                          width: "6px",
-                          height: "6px",
+                    {day.events.slice(0, 3).map((event, i) => (
+                      <span
+                        key={i}
+                        style={{
+                          width: "5px",
+                          height: "5px",
                           borderRadius: "50%",
-                          backgroundColor: event.color,
+                          backgroundColor: isSelected ? "rgba(255,255,255,0.9)" : event.color,
                           display: "inline-block"
-                        }} />
-                        {event.label}
-                      </div>
+                        }}
+                      />
                     ))}
-                    <div style={{
-                      position: "absolute",
-                      top: "100%",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      width: 0,
-                      height: 0,
-                      borderLeft: "5px solid transparent",
-                      borderRight: "5px solid transparent",
-                      borderTop: theme?.base === "dark" ? "5px solid #1e1e1e" : "5px solid #2d2d2d"
-                    }} />
                   </div>
                 )}
-              </div>
-            )
-          })}
-        </div>
+              </button>
+
+              {/* Tooltip on hover */}
+              {isHovered && day.events.length > 0 && (
+                <div style={{
+                  position: "absolute",
+                  bottom: "calc(100% + 8px)",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  backgroundColor: theme?.base === "dark" ? "#1e1e1e" : "#2d2d2d",
+                  color: "white",
+                  padding: "8px 10px",
+                  borderRadius: "6px",
+                  fontSize: "12px",
+                  whiteSpace: "nowrap",
+                  zIndex: 1000,
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                  pointerEvents: "none"
+                }}>
+                  {day.events.map((event, i) => (
+                    <div key={i} style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "6px",
+                      marginBottom: i < day.events.length - 1 ? "4px" : "0"
+                    }}>
+                      <span style={{
+                        width: "6px",
+                        height: "6px",
+                        borderRadius: "50%",
+                        backgroundColor: event.color,
+                        display: "inline-block"
+                      }} />
+                      {event.label}
+                    </div>
+                  ))}
+                  <div style={{
+                    position: "absolute",
+                    top: "100%",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    width: 0,
+                    height: 0,
+                    borderLeft: "5px solid transparent",
+                    borderRight: "5px solid transparent",
+                    borderTop: theme?.base === "dark" ? "5px solid #1e1e1e" : "5px solid #2d2d2d"
+                  }} />
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
     </div>
   )
@@ -468,7 +466,8 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
         padding: "0", 
         position: "relative",
         width: "100%",
-        maxWidth: "300px"
+        maxWidth: "300px",
+        zIndex: 9999
       }}>
         <label style={{
           display: "block",
@@ -484,19 +483,21 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
         <button
           onClick={() => setIsOpen(!isOpen)}
           style={{
-            width: "100%",
-            padding: "10px 14px",
-            backgroundColor: colors.bg,
-            border: `1px solid ${colors.border}`,
-            borderRadius: "8px",
-            fontSize: "14px",
-            color: colors.text,
-            cursor: "pointer",
-            textAlign: "left",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            transition: "all 0.2s ease"
+          position: "relative", // <-- vigtigt
+          zIndex: 9999,         // <-- høj værdi
+          width: "100%",
+          padding: "10px 14px",
+          backgroundColor: colors.bg,
+          border: `1px solid ${colors.border}`,
+          borderRadius: "8px",
+          fontSize: "14px",
+          color: colors.text,
+          cursor: "pointer",
+          textAlign: "left",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          transition: "all 0.2s ease"
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.borderColor = colors.muted
@@ -533,7 +534,7 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
             transition: "transform 0.2s ease",
             color: colors.muted
           }}>
-            ▼
+            <ChevronDown size={16} />
           </span>
         </button>
 
@@ -541,14 +542,13 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
         {isOpen && (
           <div style={{
             position: "absolute",
-            top: "calc(100% + 8px)",
+            top: "100%",
             left: 0,
             right: 0,
-            zIndex: 1000,
+            marginTop: "4px",
+            zIndex: 1001,
             backgroundColor: colors.bg,
-            border: `1px solid ${colors.border}`,
             borderRadius: "8px",
-            padding: "12px",
             boxShadow: theme?.base === "dark" 
               ? "0 10px 25px rgba(0, 0, 0, 0.5)" 
               : "0 10px 25px rgba(0, 0, 0, 0.1)"
