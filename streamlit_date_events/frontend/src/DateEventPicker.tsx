@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState, useRef, useMemo } from "react"
 import {
   Streamlit,
   withStreamlitConnection,
@@ -53,6 +53,8 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
 
   const mode = args.mode || "inline"
   const theme = props.theme as StreamlitTheme | undefined
+  const showLegend = args.showLegend !== false
+  const eventTypes: EventTypes = useMemo(() => args.eventTypes || {}, [args.eventTypes])
 
   const colors = {
     primary: theme?.primaryColor ?? "#ff4b4b",
@@ -66,27 +68,26 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
   const monthButtonStyle = {
     width: "32px",
     height: "32px",
-    borderRadius: "999px",
-    backgroundColor: colors.primary,
-    color: "white",
-    border: "none",
-    fontSize: "18px",
+    borderRadius: "6px",
+    backgroundColor: "transparent",
+    color: colors.text,
+    border: `1px solid ${colors.border}`,
+    fontSize: "16px",
     cursor: "pointer",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    transition: "transform 0.15s ease, opacity 0.15s ease",
+    transition: "all 0.2s ease",
   }
-
-
 
   useEffect(() => {
     if (mode === "inline") {
-      Streamlit.setFrameHeight(500)
+      const legendHeight = showLegend && Object.keys(eventTypes).length > 0 ? 80 : 0
+      Streamlit.setFrameHeight(380 + legendHeight)
     } else {
-      Streamlit.setFrameHeight(isOpen ? 520 : 80)
+      Streamlit.setFrameHeight(isOpen ? 460 : 50)
     }
-  }, [isOpen, mode])
+  }, [isOpen, mode, showLegend, eventTypes])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -189,33 +190,33 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
 
   const days = getDaysInMonth(currentMonth)
   const label = args.label || "Select a date"
-  const showLegend = args.showLegend !== false
-  const eventTypes: EventTypes = args.eventTypes || {}
   const selectedEvents = selectedDate ? getEventsForDate(selectedDate) : []
 
   const CalendarContent = () => (
-    <>
+    <div style={{ width: "100%" }}>
       {/* Legend */}
       {showLegend && Object.keys(eventTypes).length > 0 && (
         <div style={{
-          marginBottom: "0.75rem",
-          padding: "0.75rem",
+          marginBottom: "12px",
+          padding: "10px 12px",
           backgroundColor: colors.bg,
-          borderRadius: "0.375rem",
-          border: "1px solid rgb(226, 232, 240)"
+          borderRadius: "8px",
+          border: `1px solid ${colors.border}`
         }}>
           <div style={{
-            fontSize: "12px",
+            fontSize: "11px",
             fontWeight: 600,
-            color: colors.text,
-            marginBottom: "0.5rem"
+            color: colors.muted,
+            marginBottom: "8px",
+            textTransform: "uppercase",
+            letterSpacing: "0.5px"
           }}>
-            Event Types
+            Events
           </div>
           <div style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "0.75rem"
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
+            gap: "8px"
           }}>
             {Object.keys(eventTypes).map((key) => {
               const eventType = eventTypes[key]
@@ -225,19 +226,23 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "0.375rem"
+                    gap: "6px",
+                    fontSize: "12px"
                   }}
                 >
                   <span style={{
-                    width: "8px",
-                    height: "8px",
+                    width: "6px",
+                    height: "6px",
                     borderRadius: "50%",
                     backgroundColor: eventType.color,
-                    display: "inline-block"
+                    display: "inline-block",
+                    flexShrink: 0
                   }} />
                   <span style={{
-                    fontSize: "12px",
-                    color: colors.text
+                    color: colors.text,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap"
                   }}>
                     {eventType.label}
                   </span>
@@ -249,42 +254,54 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
       )}
 
       <div style={{
-        border: "1px solid rgb(226, 232, 240)",
-        borderRadius: "0.5rem",
-        padding: "1rem",
+        border: `1px solid ${colors.border}`,
+        borderRadius: "8px",
+        padding: "12px",
         backgroundColor: colors.bg,
-        width: "280px",
-        position: "relative"
+        width: "100%",
       }}>
         {/* Month Navigation */}
         <div style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "1rem"
+          marginBottom: "12px"
         }}>
           <button
             onClick={() => changeMonth(-1)}
             style={monthButtonStyle}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = colors.bgSecondary
+              e.currentTarget.style.borderColor = colors.muted
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent"
+              e.currentTarget.style.borderColor = colors.border
+            }}
           >
-            <ArrowBigLeft />
+            <ArrowBigLeft size={18} />
           </button>
           <div style={{
             fontSize: "14px",
             fontWeight: 600,
-            color: colors.text
+            color: colors.text,
+            letterSpacing: "0.3px"
           }}>
             {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
           </div>
           <button
             onClick={() => changeMonth(1)}
             style={monthButtonStyle}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = colors.bgSecondary
+              e.currentTarget.style.borderColor = colors.muted
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent"
+              e.currentTarget.style.borderColor = colors.border
+            }}
           >
-            <ArrowBigRight />
+            <ArrowBigRight size={18} />
           </button>
         </div>
 
@@ -292,18 +309,20 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(7, 1fr)",
-          gap: "0.25rem",
-          marginBottom: "0.5rem"
+          gap: "4px",
+          marginBottom: "8px"
         }}>
           {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
             <div
               key={day}
               style={{
                 textAlign: "center",
-                fontSize: "12px",
+                fontSize: "11px",
                 fontWeight: 600,
-                color: "rgb(131, 140, 151)",
-                padding: "0.25rem"
+                color: colors.muted,
+                padding: "8px 0",
+                textTransform: "uppercase",
+                letterSpacing: "0.5px"
               }}
             >
               {day}
@@ -315,12 +334,13 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(7, 1fr)",
-          gap: "0.25rem"
+          gap: "4px"
         }}>
           {days.map((day, index) => {
             const isSelected = day.date === selectedDate
             const isDisabled = isDateDisabled(day.date)
             const isHovered = day.date === hoveredDate
+            const isToday = day.date === new Date().toISOString().split('T')[0]
 
             return (
               <div key={index} style={{ position: "relative" }}>
@@ -332,8 +352,8 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
                   style={{
                     width: "100%",
                     aspectRatio: "1",
-                    border: "none",
-                    borderRadius: "0.25rem",
+                    border: isToday && !isSelected ? `2px solid ${colors.primary}` : "none",
+                    borderRadius: "6px",
                     fontSize: "13px",
                     cursor: day.date && !isDisabled ? "pointer" : "default",
                     backgroundColor: isSelected
@@ -344,12 +364,17 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
                     color: isSelected
                       ? "white"
                       : isDisabled
-                        ? colors.text
+                        ? colors.muted
                         : colors.text,
-                    fontWeight: isSelected ? 600 : 400,
-                    transition: "all 0.15s ease",
+                    fontWeight: isSelected || isToday ? 600 : 400,
+                    transition: "all 0.2s ease",
                     position: "relative",
-                    paddingBottom: day.events.length > 0 ? "8px" : "0"
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    paddingBottom: day.events.length > 0 ? "6px" : "0",
+                    opacity: isDisabled ? 0.4 : 1
                   }}
                 >
                   {day.date ? new Date(day.date).getDate() : ""}
@@ -358,21 +383,21 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
                   {day.events.length > 0 && (
                     <div style={{
                       position: "absolute",
-                      bottom: "2px",
+                      bottom: "4px",
                       left: "50%",
                       transform: "translateX(-50%)",
                       display: "flex",
-                      gap: "2px",
+                      gap: "3px",
                       justifyContent: "center"
                     }}>
                       {day.events.slice(0, 3).map((event, i) => (
                         <span
                           key={i}
                           style={{
-                            width: "4px",
-                            height: "4px",
+                            width: "5px",
+                            height: "5px",
                             borderRadius: "50%",
-                            backgroundColor: isSelected ? "white" : event.color,
+                            backgroundColor: isSelected ? "rgba(255,255,255,0.9)" : event.color,
                             display: "inline-block"
                           }}
                         />
@@ -385,21 +410,26 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
                 {isHovered && day.events.length > 0 && (
                   <div style={{
                     position: "absolute",
-                    bottom: "calc(100% + 4px)",
+                    bottom: "calc(100% + 8px)",
                     left: "50%",
                     transform: "translateX(-50%)",
-                    backgroundColor: colors.bg,
-                    color: colors.text,
-                    padding: "0.375rem 0.5rem",
-                    borderRadius: "0.25rem",
-                    fontSize: "11px",
+                    backgroundColor: theme?.base === "dark" ? "#1e1e1e" : "#2d2d2d",
+                    color: "white",
+                    padding: "8px 10px",
+                    borderRadius: "6px",
+                    fontSize: "12px",
                     whiteSpace: "nowrap",
                     zIndex: 1000,
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
                     pointerEvents: "none"
                   }}>
                     {day.events.map((event, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}>
+                      <div key={i} style={{ 
+                        display: "flex", 
+                        alignItems: "center", 
+                        gap: "6px",
+                        marginBottom: i < day.events.length - 1 ? "4px" : "0"
+                      }}>
                         <span style={{
                           width: "6px",
                           height: "6px",
@@ -417,9 +447,9 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
                       transform: "translateX(-50%)",
                       width: 0,
                       height: 0,
-                      borderLeft: "4px solid transparent",
-                      borderRight: "4px solid transparent",
-                      borderTop: "4px solid rgb(49, 51, 63)"
+                      borderLeft: "5px solid transparent",
+                      borderRight: "5px solid transparent",
+                      borderTop: theme?.base === "dark" ? "5px solid #1e1e1e" : "5px solid #2d2d2d"
                     }} />
                   </div>
                 )}
@@ -428,17 +458,23 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
           })}
         </div>
       </div>
-    </>
+    </div>
   )
 
   if (mode === "dropdown") {
     return (
-      <div ref={dropdownRef} style={{ fontFamily: '"Source Sans Pro", sans-serif', padding: "0", position: "relative" }}>
+      <div ref={dropdownRef} style={{ 
+        fontFamily: theme?.font || '"Source Sans Pro", sans-serif', 
+        padding: "0", 
+        position: "relative",
+        width: "100%",
+        maxWidth: "300px"
+      }}>
         <label style={{
           display: "block",
           fontSize: "14px",
           fontWeight: 400,
-          marginBottom: "0.25rem",
+          marginBottom: "6px",
           color: colors.text
         }}>
           {label}
@@ -448,11 +484,11 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
         <button
           onClick={() => setIsOpen(!isOpen)}
           style={{
-            width: "280px",
-            padding: "0.5rem 0.75rem",
+            width: "100%",
+            padding: "10px 14px",
             backgroundColor: colors.bg,
-            border: "1px solid rgb(226, 232, 240)",
-            borderRadius: "0.5rem",
+            border: `1px solid ${colors.border}`,
+            borderRadius: "8px",
             fontSize: "14px",
             color: colors.text,
             cursor: "pointer",
@@ -460,20 +496,22 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            transition: "all 0.15s ease"
+            transition: "all 0.2s ease"
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "rgb(200, 208, 218)"
+            e.currentTarget.style.borderColor = colors.muted
+            e.currentTarget.style.backgroundColor = colors.bgSecondary
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "rgb(226, 232, 240)"
+            e.currentTarget.style.borderColor = colors.border
+            e.currentTarget.style.backgroundColor = colors.bg
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
             <span>📅</span>
             <span>{formatDisplayDate(selectedDate)}</span>
             {selectedEvents.length > 0 && (
-              <div style={{ display: "flex", gap: "3px", marginLeft: "auto" }}>
+              <div style={{ display: "flex", gap: "4px", marginLeft: "auto", marginRight: "8px" }}>
                 {selectedEvents.slice(0, 3).map((event, i) => (
                   <span
                     key={i}
@@ -490,9 +528,10 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
             )}
           </div>
           <span style={{
-            fontSize: "12px",
+            fontSize: "10px",
             transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-            transition: "transform 0.2s ease"
+            transition: "transform 0.2s ease",
+            color: colors.muted
           }}>
             ▼
           </span>
@@ -502,14 +541,17 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
         {isOpen && (
           <div style={{
             position: "absolute",
-            top: "calc(100% + 0.5rem)",
+            top: "calc(100% + 8px)",
             left: 0,
+            right: 0,
             zIndex: 1000,
             backgroundColor: colors.bg,
-            border: "1px solid rgb(226, 232, 240)",
-            borderRadius: "0.5rem",
-            padding: "1rem",
-            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+            border: `1px solid ${colors.border}`,
+            borderRadius: "8px",
+            padding: "12px",
+            boxShadow: theme?.base === "dark" 
+              ? "0 10px 25px rgba(0, 0, 0, 0.5)" 
+              : "0 10px 25px rgba(0, 0, 0, 0.1)"
           }}>
             <CalendarContent />
           </div>
@@ -520,12 +562,17 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
 
   // Inline mode
   return (
-    <div style={{ fontFamily: '"Source Sans Pro", sans-serif', padding: "0" }}>
+    <div style={{ 
+      fontFamily: theme?.font || '"Source Sans Pro", sans-serif', 
+      padding: "0",
+      width: "100%",
+      maxWidth: "300px"
+    }}>
       <label style={{
         display: "block",
         fontSize: "14px",
         fontWeight: 400,
-        marginBottom: "0.5rem",
+        marginBottom: "8px",
         color: colors.text
       }}>
         {label}
