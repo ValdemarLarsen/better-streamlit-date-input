@@ -1,2 +1,2 @@
 streamlit>=1.28.0
-streamlit-date-events>=0.2.2
+streamlit-date-events>=0.2.3

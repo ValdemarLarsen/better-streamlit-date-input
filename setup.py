@@ -6,10 +6,10 @@ long_description = (this_directory / "README.md").read_text(encoding='utf-8')
 
 setup(
     name="streamlit-date-events",
-    version="0.2.2",
+    version="0.2.3",
     author="Valdemar",
     author_email="valdemarlarsen0608@gmail.com",
-    description="A Streamlit date input component with event markers",
+    description="A Streamlit date input component with event markers for highlighting important dates.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/valdemarlarsen/better-streamlit-date-input",
