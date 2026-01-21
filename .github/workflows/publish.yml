@@ -37,6 +37,8 @@ jobs:
         run: python -m build
 
       - name: Publish to PyPI
+        id: pypi-publish
+        continue-on-error: true
         env:
           TWINE_USERNAME: "__token__"
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
@@ -45,6 +47,7 @@ jobs:
 
       - name: Check upload status for PyPI
         if: steps.pypi-publish.outcome == 'failure'
+        run: |
           echo "❌ PyPI upload failed!"
           echo "Common errors:"
           echo "- Version already exists on PyPI (bump version in pyproject.toml)"
