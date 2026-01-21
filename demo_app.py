@@ -65,10 +65,10 @@ today = date.today()
 
 # Tab navigation
 tab1, tab2, tab3, tab4 = st.tabs([
-    "🎯 Quick Demo",
-    "🎨 Multiple Event Types",
-    "📊 Project Timeline",
-    "💡 Examples & Code"
+    "Quick Demo",
+    "Multiple Event Types",
+    "Project Timeline",
+    "Examples & Code"
 ])
 
 with tab1:
@@ -78,7 +78,7 @@ with tab1:
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("📅 Simple Event List")
+        st.subheader("Simple Event List")
         
         simple_events = [
             today + timedelta(days=2),
@@ -101,10 +101,10 @@ with tab1:
         if selected1:
             st.info(f"**Selected:** {selected1.strftime('%B %d, %Y')}")
             if selected1 in simple_events:
-                st.success("✅ This date has an event!")
+                st.success("This date has an event!")
     
     with col2:
-        st.subheader("🎨 Multiple Event Types")
+        st.subheader("Multiple Event Types")
         
         multi_events = {
             'important': {
@@ -263,7 +263,7 @@ with tab3:
 with tab4:
     st.header("Examples & Code Snippets")
     
-    st.subheader("1️⃣ Simple Event List")
+    st.subheader("Simple Event List")
     st.code('''
 from streamlit_date_events import date_input_with_events
 from datetime import date, timedelta
@@ -281,7 +281,7 @@ selected = date_input_with_events(
     
     st.divider()
     
-    st.subheader("2️⃣ Multiple Event Types")
+    st.subheader("Multiple Event Types")
     st.code('''
 event_types = {
     'meetings': {
@@ -306,7 +306,7 @@ selected = date_input_with_events(
     
     st.divider()
     
-    st.subheader("3️⃣ Booking System Example")
+    st.subheader("Booking System Example")
     st.code('''
 booked_dates = [date(2024, 1, 15), date(2024, 1, 20)]
 
@@ -319,26 +319,26 @@ booking_date = date_input_with_events(
 
 if booking_date:
     if booking_date in booked_dates:
-        st.error("❌ Already booked")
+        st.error("Already booked")
     else:
-        st.success(f"✅ {booking_date} is available!")
+        st.success(f"{booking_date} is available!")
     ''', language='python')
 
 # Footer
 st.divider()
 st.markdown("""
-### 🎯 Key Features
-- ✅ Multiple event types with custom colors
-- ✅ Legend showing event types
-- ✅ Tooltips on hover
-- ✅ Overlapping events (multiple dots)
-- ✅ Two display modes: inline & dropdown
-- ✅ Min/max date restrictions
-- ✅ Streamlit native styling
-- ✅ Backward compatible
+### Key Features
+- Multiple event types with custom colors
+- Legend showing event types
+- Tooltips on hover
+- Overlapping events (multiple dots)
+- Two display modes: inline & dropdown
+- Min/max date restrictions
+- Streamlit native styling
+- Backward compatible
 
-### 📚 Resources
+### Resources
 - [PyPI Package](https://pypi.org/project/streamlit-date-events/)
-- [GitHub Repository](https://github.com/yourusername/streamlit-date-events)
-- [Documentation](https://github.com/yourusername/streamlit-date-events#readme)
+- [GitHub Repository](https://github.com/ValdemarLarsen/better-streamlit-date-input)
+- [Documentation](https://github.com/ValdemarLarsen/better-streamlit-date-input#readme)
 """)
