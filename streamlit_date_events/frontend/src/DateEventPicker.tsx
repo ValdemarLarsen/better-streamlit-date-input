@@ -34,6 +34,10 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
   const mode = args.mode || "inline"
 
   useEffect(() => {
+    Streamlit.setComponentReady()
+  }, [])
+
+  useEffect(() => {
     if (mode === "inline") {
       Streamlit.setFrameHeight(500)
     } else {
