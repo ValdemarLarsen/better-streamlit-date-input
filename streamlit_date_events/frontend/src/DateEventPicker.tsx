@@ -423,9 +423,9 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
                   pointerEvents: "none"
                 }}>
                   {day.events.map((event, i) => (
-                    <div key={i} style={{ 
-                      display: "flex", 
-                      alignItems: "center", 
+                    <div key={i} style={{
+                      display: "flex",
+                      alignItems: "center",
                       gap: "6px",
                       marginBottom: i < day.events.length - 1 ? "4px" : "0"
                     }}>
@@ -461,108 +461,127 @@ const DateEventPicker: React.FC<ComponentProps> = (props) => {
 
   if (mode === "dropdown") {
     return (
-      <div ref={dropdownRef} style={{ 
-        fontFamily: theme?.font || '"Source Sans Pro", sans-serif', 
-        padding: "0", 
-        position: "relative",
-        width: "100%",
-        maxWidth: "300px",
-        zIndex: 9999,
-        isolation: "isolate"
-      }}>
-        <label style={{
-          display: "block",
-          fontSize: "14px",
-          fontWeight: 400,
-          marginBottom: "6px",
-          color: colors.text
-        }}>
-          {label}
-        </label>
+      <>
+        <style>{`
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px) scaleY(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scaleY(1);
+        }
+      }
+    `}</style>
 
-        {/* Dropdown Button */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          style={{
+
+        <div ref={dropdownRef} style={{
+          fontFamily: theme?.font || '"Source Sans Pro", sans-serif',
+          padding: "0",
+          position: "relative",
           width: "100%",
-          padding: "10px 14px",
-          backgroundColor: colors.bg,
-          border: `1px solid ${colors.border}`,
-          borderRadius: "8px",
-          fontSize: "14px",
-          color: colors.text,
-          cursor: "pointer",
-          textAlign: "left",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          transition: "all 0.2s ease"
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = colors.muted
-            e.currentTarget.style.backgroundColor = colors.bgSecondary
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = colors.border
-            e.currentTarget.style.backgroundColor = colors.bg
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
-            <span>📅</span>
-            <span>{formatDisplayDate(selectedDate)}</span>
-            {selectedEvents.length > 0 && (
-              <div style={{ display: "flex", gap: "4px", marginLeft: "auto", marginRight: "8px" }}>
-                {selectedEvents.slice(0, 3).map((event, i) => (
-                  <span
-                    key={i}
-                    style={{
-                      width: "6px",
-                      height: "6px",
-                      borderRadius: "50%",
-                      backgroundColor: event.color,
-                      display: "inline-block"
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-          <span style={{
-            fontSize: "10px",
-            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-            transition: "transform 0.2s ease",
-            color: colors.muted
+          maxWidth: "300px",
+          zIndex: 9999,
+          isolation: "isolate"
+        }}>
+          <label style={{
+            display: "block",
+            fontSize: "14px",
+            fontWeight: 400,
+            marginBottom: "6px",
+            color: colors.text
           }}>
-            <ChevronDown size={16} />
-          </span>
-        </button>
+            {label}
+          </label>
 
-        {/* Dropdown Content */}
-        {isOpen && (
-          <div style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            right: 0,
-            marginTop: "4px",
-            zIndex: 1001,
-            backgroundColor: colors.bg,
-            borderRadius: "8px",
-            boxShadow: theme?.base === "dark" 
-              ? "0 10px 25px rgba(0, 0, 0, 0.5)" 
-              : "0 10px 25px rgba(0, 0, 0, 0.1)"
-          }}>
-            <CalendarContent />
-          </div>
-        )}
-      </div>
+          {/* Dropdown Button */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            style={{
+              width: "100%",
+              padding: "10px 14px",
+              backgroundColor: colors.bg,
+              border: `1px solid ${colors.border}`,
+              borderRadius: "8px",
+              fontSize: "14px",
+              color: colors.text,
+              cursor: "pointer",
+              textAlign: "left",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              transition: "all 0.2s ease"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = colors.muted
+              e.currentTarget.style.backgroundColor = colors.bgSecondary
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = colors.border
+              e.currentTarget.style.backgroundColor = colors.bg
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1 }}>
+              <span>📅</span>
+              <span>{formatDisplayDate(selectedDate)}</span>
+              {selectedEvents.length > 0 && (
+                <div style={{ display: "flex", gap: "4px", marginLeft: "auto", marginRight: "8px" }}>
+                  {selectedEvents.slice(0, 3).map((event, i) => (
+                    <span
+                      key={i}
+                      style={{
+                        width: "6px",
+                        height: "6px",
+                        borderRadius: "50%",
+                        backgroundColor: event.color,
+                        display: "inline-block"
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+            <span style={{
+              fontSize: "10px",
+              transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.2s ease",
+              color: colors.muted
+            }}>
+              <ChevronDown size={16} />
+            </span>
+          </button>
+
+          {/* Dropdown Content */}
+          {isOpen && (
+            <div style={{
+              position: "absolute",
+              top: "100%",
+              left: 0,
+              right: 0,
+              marginTop: "4px",
+              zIndex: 1001,
+              backgroundColor: colors.bg,
+              borderRadius: "8px",
+              boxShadow: theme?.base === "dark"
+                ? "0 10px 25px rgba(0, 0, 0, 0.5)"
+                : "0 10px 25px rgba(0, 0, 0, 0.1)",
+              animation: "slideDown 0.2s ease-out",
+              transformOrigin: "top",
+              opacity: 1
+            }}>
+              <CalendarContent />
+            </div>
+          )}
+        </div>
+      </>
     )
   }
 
   // Inline mode
   return (
-    <div style={{ 
-      fontFamily: theme?.font || '"Source Sans Pro", sans-serif', 
+    <div style={{
+      fontFamily: theme?.font || '"Source Sans Pro", sans-serif',
       padding: "0",
       width: "100%",
       maxWidth: "300px"
